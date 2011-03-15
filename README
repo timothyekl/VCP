@@ -1,0 +1,5 @@
+This is the repository for a new version control system for the VCP
+independent study. Clone via:
+
+Darcs: vcp@wozniak.reshall.rose-hulman.edu:DarcsRoot/
+Git: git@github.com:lithium3141/VCP.git
