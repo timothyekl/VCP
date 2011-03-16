@@ -1,1 +1,1 @@
-require 'lib/kenny_repo.rb'
+require File.dirname(__FILE__) + File::Separator + 'lib/kenny_repo.rb'
