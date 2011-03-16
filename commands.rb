@@ -24,10 +24,13 @@ class KennyCommands
 
   # add a newly created file
   def add(args)
+    path = args[0]
+    KennyRepo.new(".").make_add_patch(path)
   end
 
   # remove a file
   def remove(args)
+    # TODO
   end
 
   # make a new commit with the files listed
