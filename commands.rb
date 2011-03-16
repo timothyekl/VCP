@@ -10,7 +10,7 @@ class KennyCommands
     puts "\tremove file -- make a patch to remove file"
     puts "\tcommit file1 [file2 ...] -- commit changes in the listed (versioned) files"
   end
-  
+
   # create a new repo
   def make(args)
     if args.length == 1
@@ -18,7 +18,7 @@ class KennyCommands
     else
       path = "."
     end
-    
+
     KennyRepo.new(path).make_repo
   end
 
