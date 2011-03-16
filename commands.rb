@@ -4,8 +4,8 @@ class KennyCommands
   def help(args)
     puts "Usage: kenny <command> [args...]"
     puts "\n"
-    puts "\thelp -- this message"
-    puts "\init [path] -- initialize a repo in the directory pointed to by path"
+    puts "\thelp -- displays this message"
+    puts "\tinit [dir] -- initialize a repository in specified directory"
     puts "\tadd file -- make a patch to add a newly created (unversioned) file"
     puts "\tremove file -- make a patch to remove file"
     puts "\tcommit file1 [file2 ...] -- commit changes in the listed (versioned) files"
