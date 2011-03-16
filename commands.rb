@@ -22,6 +22,11 @@ class KennyCommands
     KennyRepo.new(path).make_repo
   end
 
+  # make a new commit with the files listed
+  def commit(args)
+    # TODO implement
+  end
+
   # add a newly created file
   def add(args)
     path = args[0]
@@ -31,10 +36,5 @@ class KennyCommands
   # remove a file
   def remove(args)
     # TODO
-  end
-
-  # make a new commit with the files listed
-  def commit(args)
-    # TODO implement
   end
 end
