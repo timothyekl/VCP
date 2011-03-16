@@ -5,21 +5,21 @@ class KennyCommands
     puts "Usage: kenny <command> [args...]"
     puts "\n"
     puts "\thelp -- this message"
-    puts "\tmake [path] -- create a new repo in the directory pointed to by path"
+    puts "\init [path] -- initialize a repo in the directory pointed to by path"
     puts "\tadd file -- make a patch to add a newly created (unversioned) file"
     puts "\tremove file -- make a patch to remove file"
     puts "\tcommit file1 [file2 ...] -- commit changes in the listed (versioned) files"
   end
 
   # create a new repo
-  def make(args)
+  def init(args)
     if args.length == 1
       path = args[0]
     else
       path = "."
     end
 
-    KennyRepo.new(path).make_repo
+    KennyRepo.new(path).init_repo
   end
 
   # make a new commit with the files listed

@@ -4,7 +4,7 @@ def num_args_ok?(command, num_args)
   if command == "help"
     return true
   end
-  if command == "make" && [0,1].include?(num_args)
+  if command == "init" && [0,1].include?(num_args)
     return true
   end
   if command == "add" && num_args == 1
@@ -20,7 +20,7 @@ def num_args_ok?(command, num_args)
 end
 
 # Define list of commands
-commands = ["help", "make", "commit", "add", "remove"]
+commands = ["help", "init", "commit", "add", "remove"]
 
 # Parse args
 command = ARGV[0]

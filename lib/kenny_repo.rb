@@ -3,11 +3,11 @@ class KennyRepo
 
   def initialize(path)
     if !File.exist?(path)
-      raise "Path doesn't exist"
+      raise "Path doesn't exist."
     end
 
     if !File.directory?(path)
-      raise "Path is not a directory"
+      raise "Path is not a directory."
     end
 
     @path = File.expand_path(path)
@@ -25,15 +25,14 @@ class KennyRepo
     self.metadata_path + File::Separator + "current"
   end
 
-  def make_repo
-    if File.exist?(self.metadata_path)
-      # Something called .kenny exists
-      raise ".kenny already exists"
-    else
-      # No .kenny subdir - need to create everything
-      dir = Dir.mkdir(self.metadata_path)
-      Dir.mkdir(self.commits_path)
-    end
+  def init_repo
+    # a .kenny directory already exists
+    raise "Repository already initialized." if File.exist?(self.metadata_path)
+
+    # no .kenny subdirectory - need to create everything
+    dir = Dir.mkdir(self.metadata_path)
+    Dir.mkdir(self.commits_path)
+
     Dir.mkdir(self.commits_path + File::Separator + "0") # use 0 to represent root
     File.open(self.current_path, "w") { |file| file.puts "0" }
     return true
