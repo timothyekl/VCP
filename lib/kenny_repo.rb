@@ -1,31 +1,31 @@
 class KennyRepo
   attr_accessor :path
-  
+
   def initialize(path)
     if !File.exist?(path)
       raise "Path doesn't exist"
     end
-    
+
     if !File.directory?(path)
       raise "Path is not a directory"
     end
-    
+
     @path = File.expand_path(path)
   end
-  
+
   def metadata_path
-    return @path + File::Separator + ".kenny"
+    @path + File::Separator + ".kenny"
   end
-  
+
   def commits_path
-    return self.metadata_path + File::Separator + "commits"
+    self.metadata_path + File::Separator + "commits"
   end
 
   def current_path
-    return self.metadata_path + File::Separator + "current"
+    self.metadata_path + File::Separator + "current"
   end
-  
-  def make_repo    
+
+  def make_repo
     if File.exist?(self.metadata_path)
       # Something called .kenny exists
       raise ".kenny already exists"
