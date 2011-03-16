@@ -30,6 +30,12 @@ class KennyRepo
       dir = Dir.mkdir(self.metadata_path)
       Dir.mkdir(self.commits_path)
     end
+    make_root_patch
+    exec('echo "0" > ' + metadata_path + File::Separator + 'current')
     return true
+  end
+
+  def make_root_patch
+    Dir.mkdir(self.commits_path + File::Separator + "0") # use 0 to represent root
   end
 end
