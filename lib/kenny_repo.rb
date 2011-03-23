@@ -32,42 +32,26 @@ class KennyRepo
     # no .kenny subdirectory - need to create everything
     dir = Dir.mkdir(self.metadata_path)
     Dir.mkdir(self.commits_path)
-
     Dir.mkdir(self.commits_path + File::Separator + "0") # use 0 to represent root
-    File.open(self.current_path, "w") { |file| file.puts "0" }
+    File.open(self.current_path, "w") {|f| f << '0' }
     return true
   end
 
-  def make_add_patch(file_name)
-    # get a new uuid
-    uuid = self.get_uuid
-    # make a new patch directory with that uuid
-    patch_dir = self.commits_path + File::Separator + uuid
-    Dir.mkdir(patch_dir)
-    # make a subdirectory with the current patch uuid
-    parent_dir = patch_dir + File::Separator + self.get_current
-    Dir.mkdir(parent_dir)
-    # in that subdirectory put the base contents of the file
-    File.open(@path + File::Separator + file_name) do |src|
-      File.open(parent_dir + File::Separator + file_name + ".base", "w") do |dest|
-        src.each { |line| dest.puts line }
-      end
-    end
-    # add a child to the current patch
-    File.open(self.commits_path + File::Separator + self.get_current + File::Separator + "children","a") do |childs|
-      childs.puts uuid
-    end
-    # update the current patch to the new patch
-    File.open(self.current_path, "w") { |file| file.puts uuid }
+  def make_add_patch(fname)
+    uuid = AddPatch.new(self, fname, get_uuid).create
+    File.open(current_path, 'w') {|f| f << uuid }
+  end
+
+  def apply_add_patch(uuid)
+    AddPatch.new(self, '.', uuid).apply
+    File.open(current_path, 'w') {|f| f << uuid }
   end
 
   def get_uuid
-    uuid = %x[uuid]
-    return uuid[0...uuid.size-1]
+    `uuid`.strip
   end
 
   def get_current
-    str = File.read(self.current_path)
-    return str[0...str.size-1]
+    File.read(self.current_path).strip
   end
 end

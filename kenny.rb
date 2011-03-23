@@ -16,11 +16,14 @@ def num_args_ok?(command, num_args)
   if command == "commit" && num_args >= 1
     return true
   end
+  if command == "apply" && num_args == 1
+    return true
+  end
   return false
 end
 
 # Define list of commands
-commands = ["help", "init", "commit", "add", "remove"]
+commands = ["help", "init", "commit", "apply", "add", "remove"]
 
 # Parse args
 command = ARGV[0]

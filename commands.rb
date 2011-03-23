@@ -7,7 +7,7 @@ class KennyCommands
     puts "\thelp -- displays this message"
     puts "\tinit [dir] -- initialize a repository in specified directory"
     puts "\tadd file -- make a patch to add a newly created (unversioned) file"
-    puts "\tremove file -- make a patch to remove file"
+    puts "\tremove file -- make a patch to remove a file"
     puts "\tcommit file1 [file2 ...] -- commit changes in the listed (versioned) files"
   end
 
@@ -20,6 +20,8 @@ class KennyCommands
     end
 
     KennyRepo.new(path).init_repo
+
+    puts 'Repository initialized.'
   end
 
   # make a new commit with the files listed
@@ -29,8 +31,18 @@ class KennyCommands
 
   # add a newly created file
   def add(args)
-    path = args[0]
-    KennyRepo.new(".").make_add_patch(path)
+    fname = args[0]
+    KennyRepo.new(".").make_add_patch(fname)
+
+    puts fname + ' is now being tracked/remembered.'
+  end
+
+  # apply a patch to the current repository
+  def apply(args)
+    uuid = args[0]
+    KennyRepo.new(".").apply_add_patch(uuid)
+
+    puts 'Patched repository with patch ' + uuid + '.'
   end
 
   # remove a file
