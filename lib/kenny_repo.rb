@@ -1,3 +1,5 @@
+['kenny_patch', 'root_patch', 'add_patch', 'modify_patch'].each {|n| require File.dirname(__FILE__) + File::Separator + "#{n}.rb"}
+
 class KennyRepo
   attr_accessor :path
 
@@ -11,6 +13,13 @@ class KennyRepo
     end
 
     @path = File.expand_path(path)
+  end
+
+  def info
+    s = "Repository at #{@path}\n"
+    s += "Current commit: #{self.get_current}"
+
+    return s
   end
 
   def metadata_path
@@ -32,7 +41,9 @@ class KennyRepo
     # no .kenny subdirectory - need to create everything
     dir = Dir.mkdir(self.metadata_path)
     Dir.mkdir(self.commits_path)
-    Dir.mkdir(self.commits_path + File::Separator + "0") # use 0 to represent root
+    #Dir.mkdir(self.commits_path + File::Separator + "0") # use 0 to represent root
+    #File.open(self.commits_path + File::Separator + "0" + File::Separator + "type", "w") {|f| f << "root"}
+    RootPatch.new(self).create
     File.open(self.current_path, "w") {|f| f << '0' }
     return true
   end
@@ -42,8 +53,16 @@ class KennyRepo
     File.open(current_path, 'w') {|f| f << uuid }
   end
 
+  # uuid is the uuid of the patch to apply
   def apply_add_patch(uuid)
-    AddPatch.new(self, '.', uuid).apply
+    AddPatch.new(self, nil, uuid).apply
+    File.open(current_path, 'w') {|f| f << uuid }
+  end
+
+  # uuid is the uuid of the patch to unapply back to
+  # TODO: refactor uuid to be an argument of create/apply/unapply instead of initialize
+  def unapply_add_patch(uuid)
+    AddPatch.new(self, nil, uuid).unapply
     File.open(current_path, 'w') {|f| f << uuid }
   end
 
@@ -53,5 +72,22 @@ class KennyRepo
 
   def get_current
     File.read(self.current_path).strip
+  end
+  
+  def patch_for_uuid(uuid)
+    patch = nil
+    requested_path = self.commits_path + File::Separator + uuid
+    if File.exist?(requested_path) && File.directory?(requested_path)
+      type = File.read(requested_path + File::Separator + "type")
+      case type
+      when "root"
+        patch = RootPatch.new(self)
+      when "add"
+        patch = AddPatch.new(self, nil, uuid)
+      when "modify"
+        patch = ModifyPatch.new(self, nil, uuid)
+      end
+    end
+    return patch
   end
 end
