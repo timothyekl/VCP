@@ -1,6 +1,6 @@
 class AddPatch < KennyPatch
   def inspect
-    return "Add patch #{@uuid}"
+    "Add patch #{@uuid} for file #{@fname}"
   end
 
   def create
@@ -32,11 +32,8 @@ class AddPatch < KennyPatch
   end
 
   def apply
-    # if patch is not a child of the current version, then reject
-    unless File.exist?(@parent_dir)
-      raise 'Patch ' + @uuid + ' is not a child of the current patch ' + @repo.get_current + '.'
-    end
-
+    super()
+    
     # for each .base file, copy to repository
     Dir.glob(File.join(@parent_dir, "**", "*.base")) do |file|
       # determine file path relative to repository root
@@ -48,15 +45,7 @@ class AddPatch < KennyPatch
   end
 
   def unapply
-    # if patch to be unapplied back to does not exist, then reject
-    unless File.exist?(@patch_dir)
-      raise 'Patch ' + @uuid + ' does not exist.'
-    end
-
-    # if patch is not a parent of the current version, then reject
-    unless File.read(@patch_dir + File::Separator + 'children').include?(@repo.get_current)
-      raise 'Patch ' + @uuid + ' is not a parent of the current patch ' + @repo.get_current + '.'
-    end
+    super()
 
     # for each .base file, attempt to remove from repository
     Dir.glob(File.join(@repo.commits_path, @repo.get_current, @uuid, "**", "*.base")) do |file|

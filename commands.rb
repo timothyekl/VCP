@@ -40,7 +40,9 @@ class KennyCommands
 
   # make a new commit with the files listed
   def commit(args)
-    # TODO implement
+    args.each do |fname|
+      KennyRepo.new(".").make_modify_patch(fname)
+    end
   end
 
   # add a newly created file
@@ -54,7 +56,7 @@ class KennyCommands
   # apply a patch to the current repository
   def apply(args)
     uuid = args[0]
-    KennyRepo.new(".").apply_add_patch(uuid)
+    KennyRepo.new(".").apply_patch(uuid)
 
     puts 'Patched repository with patch uuid ' + uuid + '.'
   end
@@ -62,7 +64,7 @@ class KennyCommands
   # unapply a patch to the current repository
   def unapply(args)
     uuid = args[0]
-    KennyRepo.new(".").unapply_add_patch(uuid)
+    KennyRepo.new(".").unapply_patch(uuid)
 
     puts 'Unpatched repository with patch uuid ' + uuid + '.'
   end
