@@ -13,9 +13,10 @@ class KennyRepo
     end
 
     @path = File.expand_path(path)
-    
+
     if File.exist?(self.metadata_path) && File.directory?(self.metadata_path)
       if File.exist?(self.tmp_path)
+        #Dir.rmdir(self.tmp_path)
         FileUtils::remove_dir(self.tmp_path, force=true)
       end
       Dir.mkdir(self.tmp_path)
@@ -46,7 +47,7 @@ class KennyRepo
   def metadata_path
     @path + File::Separator + ".kenny"
   end
-  
+
   def tmp_path
     self.metadata_path + File::Separator + "tmp"
   end
@@ -73,7 +74,7 @@ class KennyRepo
     File.open(self.current_path, "w") {|f| f << '0' }
     return true
   end
-  
+
   def apply_patch(uuid)
     type = self.patch_for_uuid(uuid).type
     case type
@@ -87,7 +88,7 @@ class KennyRepo
       raise "Patch type #{type} unimplemented for apply action"
     end
   end
-  
+
   def unapply_patch(uuid)
     type = self.patch_for_uuid(uuid).type
     case type
@@ -112,12 +113,12 @@ class KennyRepo
     AddPatch.new(self, nil, uuid).apply
     File.open(current_path, 'w') {|f| f << uuid }
   end
-  
+
   def make_modify_patch(fname)
     uuid = ModifyPatch.new(self, fname, get_uuid).create
     File.open(current_path, 'w') {|f| f << uuid}
   end
-  
+
   def apply_modify_patch(uuid)
     ModifyPatch.new(self, nil, uuid).apply
     File.open(current_path, 'w') {|f| f << uuid}
@@ -129,7 +130,7 @@ class KennyRepo
     AddPatch.new(self, nil, uuid).unapply
     File.open(current_path, 'w') {|f| f << uuid }
   end
-  
+
   def unapply_modify_patch(uuid)
     new_uuid = ModifyPatch.new(self, nil, uuid).unapply
     File.open(current_path, 'w') {|f| f << new_uuid}
@@ -142,7 +143,7 @@ class KennyRepo
   def get_current
     File.read(self.current_path).strip
   end
-  
+
   def patch_for_uuid(uuid)
     patch = nil
     requested_path = self.commits_path + File::Separator + uuid
