@@ -46,13 +46,17 @@ class AddPatch < KennyPatch
 
   def unapply
     super()
-
+    
+    raise "Cannot unapply non-current add patch" unless @uuid == @repo.get_current
+    parents = self.parents
+    raise "Unexpected number of parents: #{self.parents.length} for 1 when unapplying #{@uuid}" unless self.parents.length == 1
+    puts "Unapplying #{@uuid}; using #{File.join(@repo.commits_path, @repo.get_current, self.parents[0].uuid.to_s, "**", "*.base")}"
     # for each .base file, attempt to remove from repository
-    Dir.glob(File.join(@repo.commits_path, @repo.get_current, @uuid, "**", "*.base")) do |file|
+    Dir.glob(File.join(@repo.commits_path, @repo.get_current, self.parents[0].uuid.to_s, "**", "*.base")) do |file|
       puts 'FILE: ' + file
 
       # determine file path relative to repository root
-      relpath = Pathname.new(file).relative_path_from(Pathname.new(File.join(@repo.commits_path, @repo.get_current, @uuid)))
+      relpath = Pathname.new(file).relative_path_from(Pathname.new(File.join(@repo.commits_path, @repo.get_current, self.parents[0].uuid.to_s)))
       puts 'RELPATH: ' + relpath.to_s
 
       puts(@repo.path + File::Separator + relpath.to_s.chomp('.base'))

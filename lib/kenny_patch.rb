@@ -19,6 +19,10 @@ class KennyPatch
     end
   end
 
+  def ==(other)
+    @uuid == other.uuid
+  end
+
   def process_fname(name)
     # Do nothing - no common behavior
   end
@@ -33,7 +37,7 @@ class KennyPatch
     if File.exist?(parent_children)
       if File.size(parent_children) > 0
         puts "This patch already has children. Are you sure you want to create a branch? (y/n)"
-        if $STDIN.gets.chomp != 'y'
+        if $stdin.gets.chomp != 'y'
           exit
         end
       end
@@ -52,7 +56,7 @@ class KennyPatch
     Dir.mkdir(@parent_dir)
 
     # add new patch as a child to the current patch
-    File.open(parent_children,'w') << @uuid + "\n"
+    File.open(parent_children,'a') { |f| f << @uuid + "\n" }
 
     # return uuid
     @uuid

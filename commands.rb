@@ -56,7 +56,12 @@ class KennyCommands
   # apply a patch to the current repository
   def apply(args)
     uuid = args[0]
-    KennyRepo.new(".").apply_patch(uuid)
+    if args.length == 2
+        other = args[1]
+    else
+        other = ""
+    end
+    KennyRepo.new(".").apply_patch(uuid, other)
 
     puts 'Patched repository with patch uuid ' + uuid + '.'
   end
@@ -64,7 +69,12 @@ class KennyCommands
   # unapply a patch to the current repository
   def unapply(args)
     uuid = args[0]
-    KennyRepo.new(".").unapply_patch(uuid)
+    if args.length == 2
+        other = args[1]
+    else
+        other = ""
+    end
+    KennyRepo.new(".").unapply_patch(uuid, other)
 
     puts 'Unpatched repository with patch uuid ' + uuid + '.'
   end
@@ -72,6 +82,13 @@ class KennyCommands
   # remove a file
   def remove(args)
     # TODO
+  end
+
+  def merge(args)
+    target_uuid = args[0]
+    KennyRepo.new(".").make_merge_patch(target_uuid)
+    
+    puts 'Merging the current patch with ' + target_uuid + '.'
   end
   
   def debug(args)

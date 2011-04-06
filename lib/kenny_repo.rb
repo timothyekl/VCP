@@ -1,5 +1,7 @@
 ['kenny_patch', 'root_patch', 'add_patch', 'modify_patch'].each {|n| require File.dirname(__FILE__) + File::Separator + "#{n}.rb"}
 
+
+
 class KennyRepo
   attr_accessor :path
 
@@ -75,7 +77,7 @@ class KennyRepo
     return true
   end
 
-  def apply_patch(uuid)
+  def apply_patch(uuid, merge_uuid)
     type = self.patch_for_uuid(uuid).type
     case type
     when "root"
@@ -84,12 +86,14 @@ class KennyRepo
       self.apply_add_patch(uuid)
     when "modify"
       self.apply_modify_patch(uuid)
+    when "merge"
+      self.apply_merge_patch(uuid, merge_uuid)
     else
       raise "Patch type #{type} unimplemented for apply action"
     end
   end
 
-  def unapply_patch(uuid)
+  def unapply_patch(uuid, merge_uuid)
     type = self.patch_for_uuid(uuid).type
     case type
     when "root"
@@ -98,6 +102,8 @@ class KennyRepo
       self.unapply_add_patch(uuid)
     when "modify"
       self.unapply_modify_patch(uuid)
+    when "merge"
+      self.unapply_merge_patch(uuid, merge_uuid)
     else
       raise "Patch type #{type} unimplemented for unapply action"
     end
@@ -124,17 +130,39 @@ class KennyRepo
     File.open(current_path, 'w') {|f| f << uuid}
   end
 
+  def make_merge_patch(target_uuid)
+    headFile = patch_for_uuid(get_current).fname
+    targFile = patch_for_uuid(target_uuid).fname
+    if headFile == targFile
+        uuid = MergePatch.new(self, headFile, get_uuid).create(target_uuid)
+        File.open(current_path, 'w') {|f| f << uuid }
+    else
+        raise "Cannot merge patches that operate on different files"
+    end
+  end
+
+  def apply_merge_patch(uuid, merge_uuid)
+    MergePatch.new(self, nil, uuid).apply(merge_uuid)
+    File.open(current_path, 'w') {|f| f << uuid}
+  end
+
   # uuid is the uuid of the patch to unapply back to
-  # TODO: refactor uuid to be an argument of create/apply/unapply instead of initialize
   def unapply_add_patch(uuid)
-    AddPatch.new(self, nil, uuid).unapply
-    File.open(current_path, 'w') {|f| f << uuid }
+    p = AddPatch.new(self, nil, uuid)
+    p.unapply
+    File.open(current_path, 'w') {|f| f << p.parents[0].uuid.to_s }
   end
 
   def unapply_modify_patch(uuid)
     new_uuid = ModifyPatch.new(self, nil, uuid).unapply
     File.open(current_path, 'w') {|f| f << new_uuid}
   end
+
+  def unapply_merge_patch(uuid, merge_uuid)
+    new_uuid = MergePatch.new(self, nil, uuid).unapply(merge_uuid)
+    File.open(current_path, 'w') {|f| f << new_uuid}
+  end
+    
 
   def get_uuid
     `uuid`.strip
@@ -156,6 +184,8 @@ class KennyRepo
         patch = AddPatch.new(self, nil, uuid)
       when "modify"
         patch = ModifyPatch.new(self, nil, uuid)
+      when "merge"
+        patch = MergePatch.new(self, nil, uuid)
       end
     end
     return patch

@@ -16,10 +16,10 @@ def num_args_ok?(command, num_args)
   if command == "commit" && num_args >= 1
     return true
   end
-  if command == "apply" && num_args == 1
+  if command == "apply" && [1,2].include?(num_args)
     return true
   end
-  if command == "unapply" && num_args == 1
+  if command == "unapply" && [1,2].include?(num_args)
     return true
   end
   if command == "info" && [0,1].include?(num_args)
@@ -28,11 +28,14 @@ def num_args_ok?(command, num_args)
   if command == "debug" && num_args >= 1
     return true
   end
+  if command == "merge" && num_args == 1
+    return true
+  end
   return false
 end
 
 # Define list of commands
-commands = ["help", "init", "commit", "apply", "unapply", "add", "remove", "info", "debug"]
+commands = ["help", "init", "commit", "apply", "unapply", "add", "remove", "info", "debug", "merge"]
 
 # Parse args
 command = ARGV[0]
