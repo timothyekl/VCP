@@ -3,6 +3,8 @@ class MergePatch < KennyPatch
   def create(other_uuid)
     super()
 
+    @other_uuid = other_uuid
+
     # To merge the current patch with patch X
     # 1. Find the most recent common ancestor Anc
     #   1.1 If head is an ancestor of X, abort
@@ -60,6 +62,9 @@ class MergePatch < KennyPatch
     Dir.mkdir(@other_dir) if !File.exist?(@other_dir)
     File.open(File.join(@other_dir, @fname + '.diff'), 'w') {|f| f << %x(diff -u #{tmp_file} #{merged_file})}
 
+    # 5. Copy the merged version to the main directory
+    FileUtils.cp(File.join(@repo.tmp_path, @fname + '.merged'), File.join(@repo.path, @fname))
+
     puts "Merged patches with patch #{uuid}"
 
     @uuid
@@ -81,7 +86,7 @@ class MergePatch < KennyPatch
 
   def apply(parent_uuid)
     super()
-    if !(parent_uuid == parents.first.uuid || parent_uuid == @other_uuid)
+    if !(parents.map {|x| x.uuid}.include?(parent_uuid))
       raise "#{parent_uuid} is not a parent of #{@uuid}"
     end
     diff_path = File.join(@patch_dir, parent_uuid, @fname + '.diff')
@@ -90,7 +95,7 @@ class MergePatch < KennyPatch
 
   def unapply(parent_uuid)
     super()
-    if !(parent_uuid == parents.first.uuid || parent_uuid == @other_uuid)
+    if !(parents.map {|x| x.uuid}.include?(parent_uuid))
       raise "#{parent_uuid} is not a parent of #{@uuid}"
     end
     diff_path = File.join(@patch_dir, parent_uuid, @fname + '.diff')
