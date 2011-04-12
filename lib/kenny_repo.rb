@@ -77,7 +77,7 @@ class KennyRepo
     return true
   end
 
-  def apply_patch(uuid, merge_uuid)
+  def apply_patch(uuid, merge_uuid = nil)
     type = self.patch_for_uuid(uuid).type
     case type
     when "root"
@@ -87,13 +87,14 @@ class KennyRepo
     when "modify"
       self.apply_modify_patch(uuid)
     when "merge"
+      raise "Need merge parent UUID" if merge_uuid.nil?
       self.apply_merge_patch(uuid, merge_uuid)
     else
       raise "Patch type #{type} unimplemented for apply action"
     end
   end
 
-  def unapply_patch(uuid, merge_uuid)
+  def unapply_patch(uuid, merge_uuid = nil)
     type = self.patch_for_uuid(uuid).type
     case type
     when "root"
@@ -103,6 +104,7 @@ class KennyRepo
     when "modify"
       self.unapply_modify_patch(uuid)
     when "merge"
+      raise "Need merge parent UUID" if merge_uuid.nil?
       self.unapply_merge_patch(uuid, merge_uuid)
     else
       raise "Patch type #{type} unimplemented for unapply action"

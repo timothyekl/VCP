@@ -55,10 +55,10 @@ class MergePatch < KennyPatch
 
     # 4. diff M against X and against head to create the patch
 
-    File.open(File.join(@parent_dir, @fname + '.diff'), 'w') {|f| f << %x(diff #{head_file} #{merged_file})}
+    File.open(File.join(@parent_dir, @fname + '.diff'), 'w') {|f| f << %x(diff -u #{head_file} #{merged_file})}
     @other_dir = File.join(@patch_dir, other.uuid)
     Dir.mkdir(@other_dir) if !File.exist?(@other_dir)
-    File.open(File.join(@other_dir, @fname + '.diff'), 'w') {|f| f << %x(diff #{tmp_file} #{merged_file})}
+    File.open(File.join(@other_dir, @fname + '.diff'), 'w') {|f| f << %x(diff -u #{tmp_file} #{merged_file})}
 
     puts "Merged patches with patch #{uuid}"
 
